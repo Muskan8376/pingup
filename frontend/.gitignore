@@ -1,0 +1,51 @@
+# Dependencies
+/node_modules
+
+# Build output
+/dist
+/dist-ssr
+/build
+/.next/
+/out/
+/.svelte-kit/
+
+# Cache directories
+.cache/
+.vite/
+.parcel-cache/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Local environment variables
+.env.local
+.env.*.local
+*.local
+
+# Exclude all .env files by default
+.env
+.env.*
+# Except for the example file
+!.env.example
+
+# Test reports
+/coverage
+.nyc_output
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS generated
