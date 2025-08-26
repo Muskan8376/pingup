@@ -69,13 +69,16 @@
 //     syncUserCreation, syncUserUpdation,syncUserDeletion
 // ];
 
-import { Inngest } from "inngest";
-import User from "path-to-your-user-model";  // <-- Make sure this path is correct
-import { serve } from "inngest/next";
 
+
+import { Inngest } from "inngest";
+import { serve } from "inngest/next";
+import User from "../models/User.js";
+
+// ✅ Initialize Inngest client
 export const inngest = new Inngest({ id: "pingup-app" });
 
-// User creation sync
+// ✅ User creation sync
 const syncUserCreation = inngest.createFunction(
   { id: "sync-user-from-clerk" },
   { event: "clerk/user.created" },
@@ -83,15 +86,12 @@ const syncUserCreation = inngest.createFunction(
     try {
       const { id, first_name, last_name, email_addresses, image_url } = event.data;
 
-      // Defensive check in case email_addresses array is empty or undefined
       if (!email_addresses || email_addresses.length === 0) {
         throw new Error("No email addresses found in event data");
       }
 
-      // Get username from first email
       let username = email_addresses[0].email_address.split("@")[0];
 
-      // Check if username already exists
       const existingUser = await User.findOne({ username });
       if (existingUser) {
         username = username + Math.floor(Math.random() * 10000);
@@ -108,12 +108,12 @@ const syncUserCreation = inngest.createFunction(
       await User.create(userData);
     } catch (error) {
       console.error("Error in syncUserCreation:", error);
-      throw error; // Rethrow to make sure Inngest knows this failed
+      throw error;
     }
   }
 );
 
-// User update sync
+// ✅ User update sync
 const syncUserUpdation = inngest.createFunction(
   { id: "update-user-from-clerk" },
   { event: "clerk/user.updated" },
@@ -142,7 +142,7 @@ const syncUserUpdation = inngest.createFunction(
   }
 );
 
-// User deletion sync
+// ✅ User deletion sync
 const syncUserDeletion = inngest.createFunction(
   { id: "delete-user-from-clerk" },
   { event: "clerk/user.deleted" },
@@ -162,8 +162,11 @@ const syncUserDeletion = inngest.createFunction(
   }
 );
 
-// Export all functions
+// ✅ Export all functions
 export const functions = [syncUserCreation, syncUserUpdation, syncUserDeletion];
 
-// Export the handler for serverless environment (e.g., Vercel)
-export default serve("pingup-app", functions);
+// ✅ Correct way to export serve handler
+export default serve({
+  client: inngest,
+  functions,
+});
